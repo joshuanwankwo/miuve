@@ -5,6 +5,7 @@ import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
 import { useSignInModal } from "./sign-in-modal";
 import UserDropdown from "./user-dropdown";
+import { register } from "@/app/api/services";
 // import { Session } from "next-auth";
 
 export default function NavBar() {
@@ -37,7 +38,7 @@ export default function NavBar() {
             ) : ( */}
             <button
               className="rounded-full border border-green bg-green-600 p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
-              // onClick={() => setShowSignInModal(true)}
+              onClick={() => register()}
             >
               Get Started
             </button>

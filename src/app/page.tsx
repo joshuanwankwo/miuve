@@ -1,6 +1,11 @@
+"use client";
+
+import Card from "@/components/card";
+import { useState } from "react";
 import Balancer from "react-wrap-balancer";
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState("aws");
   return (
     <>
       <div className="z-10 w-full max-w-xl px-5 xl:px-0">
@@ -26,19 +31,21 @@ export default function Home() {
           style={{ animationDelay: "0.25s", animationFillMode: "forwards" }}
         >
           <Balancer>
-            Easily migrate your data from AWS to Sia decentraliced cloud via
-            renterd
+            Easily migrate your data from AWS to Sia decentralized cloud storage
+            via renterd
           </Balancer>
         </p>
         <div
           className="mx-auto mt-6 flex animate-fade-up items-center justify-center space-x-5 opacity-0"
           style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
         >
-          <a
-            className="flex max-w-fit items-center justify-center space-x-2 rounded-full border border-gray-300 bg-white px-5 py-2 text-sm text-gray-600 shadow-md transition-colors hover:border-gray-800"
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => setActiveTab("aws")}
+            className={`flex max-w-fit items-center justify-center space-x-2 rounded-full border border-gray-300 ${
+              activeTab === "aws"
+                ? " bg-green-600 px-5 py-2 text-sm text-white shadow-md transition-colors hover:border-green-200"
+                : "bg-white px-5 py-2 text-sm text-gray-600 shadow-md transition-colors hover:border-green-200"
+            }`}
           >
             {/* <svg
               className="h-4 w-4 group-hover:text-black"
@@ -55,20 +62,29 @@ export default function Home() {
               />
             </svg> */}
             <p>AWS s3 bucket</p>
-          </a>
-          <a
-            className="flex max-w-fit items-center justify-center space-x-2 rounded-full border border-gray-300 bg-green-600 px-5 py-2 text-sm text-white shadow-md transition-colors hover:border-green-200"
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
+          </button>
+          <button
+            onClick={() => setActiveTab("sia")}
+            className={`flex max-w-fit items-center justify-center space-x-2 rounded-full border border-gray-300 ${
+              activeTab === "sia"
+                ? "bg-green-600 px-5 py-2 text-sm text-white shadow-md transition-colors hover:border-green-200"
+                : "bg-white px-5 py-2 text-sm text-gray-600 shadow-md transition-colors hover:border-green-200"
+            } `}
           >
             {/* <Github /> */}
             <p>
               <span className="hidden sm:inline-block">Sia Cloud</span> Renterd
             </p>
-          </a>
+          </button>
+        </div>
+        <div className="my-10 grid w-full max-w-screen-xl animate-fade-up grid-cols-1 gap-5 px-5 md:grid-cols-3 xl:px-0">
+          {features.map((k) => (
+            <Card key={k} />
+          ))}
         </div>
       </div>
     </>
   );
 }
+
+const features = ["hey", "hello", "weldone", "God"];
