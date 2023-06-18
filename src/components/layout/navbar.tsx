@@ -21,26 +21,25 @@ export default function NavBar() {
             : "bg-white/0"
         } z-30 transition-all`}
       >
-        <div className="mx-5 flex h-16 max-w-screen-xl items-center justify-between xl:mx-auto">
+        <div className="mx-5 flex h-16 py-14 max-w-screen-xl items-center justify-between xl:mx-auto">
           <Link href="/" className="flex items-center font-display text-2xl">
             <Image
-              src="/miuve_logo.png"
-              alt="Precedent logo"
-              width="30"
-              height="30"
+              src="/siamuive_logo.png"
+              alt="Sia muive logo"
+              width="200"
+              height="90"
               className="mr-2 rounded-sm"
             ></Image>
-            <p className="text-black">Miuve</p>
           </Link>
           <div>
             {/* {session ? (
               <UserDropdown session={session} />
             ) : ( */}
             <button
-              className="rounded-full border border-black bg-black p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black"
+              className="rounded-full border border-green bg-green-600 p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
               // onClick={() => setShowSignInModal(true)}
             >
-              Sign In
+              Get Started
             </button>
             {/* )} */}
           </div>
