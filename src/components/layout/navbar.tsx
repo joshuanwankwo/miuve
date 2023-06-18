@@ -5,15 +5,12 @@ import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
 import { useSignInModal } from "./sign-in-modal";
 import { register } from "@/app/api/services";
-// import { Session } from "next-auth";
 
 export default function NavBar() {
-  // const { SignInModal, setShowSignInModal } = useSignInModal();
   const scrolled = useScroll(50);
 
   return (
     <>
-      {/* <SignInModal /> */}
       <div
         className={`fixed top-0 w-full ${
           scrolled
