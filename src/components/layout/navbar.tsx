@@ -5,9 +5,19 @@ import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
 import { useSignInModal } from "./sign-in-modal";
 import { register } from "@/app/api/services";
+import { useEffect, useState } from "react";
 
 export default function NavBar() {
   const scrolled = useScroll(50);
+  const [storedValue, setStoredValue] = useState("");
+
+  useEffect(() => {
+    // Retrieve from localStorage
+    const item = window.localStorage.getItem("token");
+    if (item) {
+      setStoredValue(JSON.parse(item));
+    }
+  }, []);
 
   return (
     <>
@@ -29,16 +39,21 @@ export default function NavBar() {
             ></Image>
           </Link>
           <div>
-            {/* {session ? (
-              <UserDropdown session={session} />
-            ) : ( */}
-            <button
-              className="rounded-full border border-green bg-green-600 p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
-              onClick={() => register()}
-            >
-              Get Started
-            </button>
-            {/* )} */}
+            {storedValue ? (
+              <button
+                className="rounded-full border border-green bg-[#1ED660] p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
+                onClick={() => register()}
+              >
+                Log Out
+              </button>
+            ) : (
+              <button
+                className="rounded-full border border-green bg-[#1ED660] p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
+                onClick={() => register()}
+              >
+                Get Started
+              </button>
+            )}
           </div>
         </div>
       </div>
