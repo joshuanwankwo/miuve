@@ -4,20 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
 import { useSignInModal } from "./sign-in-modal";
-import { register } from "@/app/api/services";
+import { logOut, register } from "@/app/api/services";
 import { useEffect, useState } from "react";
+import useLocalStorage from "@/lib/hooks/use-local-storage";
 
 export default function NavBar() {
   const scrolled = useScroll(50);
-  const [storedValue, setStoredValue] = useState("");
-
+  // const [storedValue, setStoredValue] = useState("");
+  const [value] = useLocalStorage("token", "");
   useEffect(() => {
-    // Retrieve from localStorage
-    const item = window.localStorage.getItem("token");
-    if (item) {
-      setStoredValue(JSON.parse(item));
-    }
-  }, []);
+    console.log(value);
+  }, [value]);
 
   return (
     <>
@@ -39,10 +36,10 @@ export default function NavBar() {
             ></Image>
           </Link>
           <div>
-            {storedValue ? (
+            {value ? (
               <button
                 className="rounded-full border border-green bg-[#1ED660] p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
-                onClick={() => register()}
+                onClick={() => logOut()}
               >
                 Log Out
               </button>

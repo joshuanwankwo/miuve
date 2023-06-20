@@ -3,8 +3,9 @@
 import Card from "@/components/card";
 import { useEffect, useState } from "react";
 import Balancer from "react-wrap-balancer";
-import { download, upload } from "./api/services";
+import { downloadFromRentred, uploadToRenterd } from "./api/services";
 import AWS from "aws-sdk";
+import useLocalStorage from "@/lib/hooks/use-local-storage";
 
 AWS.config.update({
   accessKeyId: "AKIAQXZ7WJWOJA7EH7FS",
@@ -20,14 +21,19 @@ export default function Home() {
   const [awsFiles, setAwsFiles] = useState([]);
   const [siaFiles, setSiaFiles] = useState([]);
   const [uploaded, setUploaded] = useState(false);
+  const [blobURL, setBlobURL] = useState<void>();
 
   const handleFileInput = (e: any) => {
-    uploadToS3(e.target.files[0]);
+    if (activeTab === "aws") {
+      uploadToS3(e.target.files[0]);
+      console.log("AWS ");
+    } else {
+      uploadToRenterd(e.target.files[0]);
+      console.log("sia ");
+    }
   };
 
-  // useEffect(() => {
-  //   download("user/document/pictures");
-  // }, [selectedFile]);
+  const [value] = useLocalStorage("token", "");
 
   const uploadToS3 = async (selectedFile: File) => {
     const s3 = new AWS.S3();
@@ -83,6 +89,25 @@ export default function Home() {
 
     return signedUrl;
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await downloadFromRentred();
+        console.log(data);
+        setBlobURL(data);
+
+        console.log(blobURL);
+
+        // setBlobURL(data);
+      } catch (error) {
+        console.error("API request failed:", error);
+      }
+    };
+
+    fetchData();
+  }, [blobURL]);
+
   return (
     <>
       <div className=" w-full max-w-xl px-5 xl:px-0 z-10">
@@ -155,11 +180,13 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <div className="my-10 grid w-screen max-w-screen-xl animate-fade-up grid-cols-1 gap-5 border px-5 md:grid-cols-3 xl:px-0">
-        {activeTab === "aws"
-          ? awsFiles.map((file, index) => <Card key={index} url={file} />)
-          : siaFiles.map((file, index) => <Card key={index} url={file} />)}
-      </div>
+      {value && (
+        <div className="my-10 grid w-screen max-w-screen-xl animate-fade-up grid-cols-1 gap-5 border px-5 md:grid-cols-3 xl:px-0">
+          {activeTab === "aws"
+            ? awsFiles.map((file, index) => <Card key={index} url={file} />)
+            : siaFiles.map((file, index) => <Card key={index} url={file} />)}
+        </div>
+      )}
       <label
         htmlFor="file"
         className="cursor-pointer fixed bottom-20 right-20 z-10 h-14 w-14 flex items-center justify-center rounded-full bg-[#1ED660] text-4xl text-white transition-all hover:bg-white hover:text-[#1ED660] "

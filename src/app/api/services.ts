@@ -5,14 +5,19 @@ export const register = () => {
     method: "POST",
     redirect: "follow",
   })
-    .then((res) => res.text())
+    .then((res) => res.json())
     .then((result) => {
       // Log the resolved result
-      const stringWithoutQuotes = `${result}`.replaceAll('"', "");
-      console.log(stringWithoutQuotes);
-      window.localStorage.setItem("token", JSON.stringify(stringWithoutQuotes));
+
+      window.localStorage.setItem("token", JSON.stringify(result));
     })
     .catch((err) => console.log(err));
+};
+
+export const logOut = () => {
+  console.log("here");
+
+  window.localStorage.removeItem("token");
 };
 
 // export const download = () => {
@@ -33,17 +38,26 @@ export const register = () => {
 //     .catch((err) => console.log(err));
 // };
 
-export const upload = (path: any) => {
+export const uploadToRenterd = (file: File) => {
   const password = window.localStorage.getItem("token");
+
   const username = "";
 
-  const authHeader = "Basic " + btoa(username + ":" + password);
+  const authHeader =
+    "Basic " + btoa(username + ":" + JSON.parse(password as string));
 
-  fetch(`${API_ENDPOINT}${path}`, {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  fetch(`${API_ENDPOINT}judicodes/files`, {
     method: "PUT",
     redirect: "follow",
+    body: formData,
     headers: {
-      Authentication: authHeader,
+      Authorization: authHeader,
+      "content-type": file.type,
+      "content-length": `${file.size}`,
     },
   })
     .then((res) => res.text())
@@ -53,23 +67,58 @@ export const upload = (path: any) => {
     .catch((err) => console.log(err));
 };
 
+// const handleApiResponse = (response: any) => {
+//   // Assuming the response is received as a string
+//   const responseParts = response.split("\n\n");
 
-export const download = (path: any) => {
-    const password = window.localStorage.getItem("token");
-    const username = "";
-  
-    const authHeader = "Basic " + btoa(username + ":" + password);
-  
-    fetch(`${API_ENDPOINT}${path}`, {
-      method: "GET",
-      redirect: "follow",
-      headers: {
-        Authentication: authHeader,
-      },
+//   // Extract the file data from the response
+//   const fileData = responseParts[1];
+
+//   // Create a blob from the file data
+//   const blob = new Blob([fileData], { type: "image/png" });
+
+//   // Create a URL for the blob
+//   const url = URL.createObjectURL(blob);
+
+//   // Set the preview URL
+// };
+
+export const downloadFromRentred = async () => {
+  const password = window.localStorage.getItem("token");
+  const username = "";
+
+  const authHeader =
+    "Basic " + btoa(username + ":" + JSON.parse(password as string));
+  fetch(`${API_ENDPOINT}judicodes/files`, {
+    method: "GET",
+    redirect: "follow",
+    headers: {
+      Authorization: authHeader,
+    },
+  })
+    .then((res) => res.blob())
+    .then((result) => {
+      console.log(result);
+      const blob = new Blob([result], {
+        type: "application/octet-stream",
+      });
+      const imageUrl = URL.createObjectURL(blob);
+
+      console.log(imageUrl);
+
+      return imageUrl;
     })
-      .then((res) => res.text())
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => console.log(err));
-  };
+    .catch((err) => console.log(err));
+};
+
+const handleApiResponse = (response: any) => {
+  // Create a blob from the image data
+  const blob = new Blob([response], { type: "application/octet-stream" });
+
+  // Create a URL for the blob
+  const url = URL.createObjectURL(blob);
+  console.log(url);
+
+  return url;
+  // Set the preview URL
+};
