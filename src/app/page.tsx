@@ -26,10 +26,8 @@ export default function Home() {
   const handleFileInput = (e: any) => {
     if (activeTab === "aws") {
       uploadToS3(e.target.files[0]);
-      console.log("AWS ");
     } else {
       uploadToRenterd(e.target.files[0]);
-      console.log("sia ");
     }
   };
 
@@ -47,8 +45,7 @@ export default function Home() {
         Key: `${Date.now()}.${selectedFile.name}` || "",
         Body: selectedFile,
       };
-      const { Location } = await s3.upload(params).promise();
-      console.log("uploading to s3", Location);
+      await s3.upload(params).promise();
       setUploaded(true);
     } catch (err) {
       console.log(err);
@@ -69,6 +66,7 @@ export default function Home() {
             return {
               key: file.Key,
               url: getFileUrlFromS3(file.Key),
+              body: file,
             };
           });
           setAwsFiles(fileKeys);
@@ -94,10 +92,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const data = await downloadFromRentred();
-        console.log(data);
         setBlobURL(data);
-
-        console.log(blobURL);
 
         // setBlobURL(data);
       } catch (error) {
@@ -183,8 +178,8 @@ export default function Home() {
       {value && (
         <div className="my-10 grid w-screen max-w-screen-xl animate-fade-up grid-cols-1 gap-5 border px-5 md:grid-cols-3 xl:px-0">
           {activeTab === "aws"
-            ? awsFiles.map((file, index) => <Card key={index} url={file} />)
-            : siaFiles.map((file, index) => <Card key={index} url={file} />)}
+            ? awsFiles.map((file, index) => <Card key={index} file={file} />)
+            : siaFiles.map((file, index) => <Card key={index} file={file} />)}
         </div>
       )}
       <label

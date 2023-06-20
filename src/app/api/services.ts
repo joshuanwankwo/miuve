@@ -98,13 +98,10 @@ export const downloadFromRentred = async () => {
   })
     .then((res) => res.blob())
     .then((result) => {
-      console.log(result);
       const blob = new Blob([result], {
         type: "application/octet-stream",
       });
       const imageUrl = URL.createObjectURL(blob);
-
-      console.log(imageUrl);
 
       return imageUrl;
     })
