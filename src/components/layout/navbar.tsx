@@ -10,9 +10,6 @@ import { logOut, register } from "@/app/api/siaServices";
 export default function NavBar() {
   const scrolled = useScroll(50);
   const [value] = useLocalStorage("token", "");
-  useEffect(() => {
-    console.log(value);
-  }, [value]);
 
   return (
     <>
@@ -31,7 +28,8 @@ export default function NavBar() {
               width="200"
               height="90"
               className="mr-2 rounded-sm"
-            ></Image>
+              priority
+            />
           </Link>
           <div>
             {value ? (

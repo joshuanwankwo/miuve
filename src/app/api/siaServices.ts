@@ -5,8 +5,8 @@ export const register = async () => {
     method: "POST",
     redirect: "follow",
   })
-    .then(async (res) => res.json())
-    .then(async (result) => {
+    .then(async (res) => await res.json())
+    .then((result) => {
       return result;
     })
     .catch((err) => console.log(err));
@@ -17,14 +17,15 @@ export const logOut = () => {
   window.location.reload();
 };
 
-export const uploadToRenterd = (file: File) => {
+export const uploadToRenterd = async (file: File) => {
+  console.log("Uploading...");
   const password = window.localStorage.getItem("token");
   const username = "";
   const authHeader =
     "Basic " + btoa(username + ":" + JSON.parse(password as string));
   const key = (Math.random() + 1).toString(36).substring(7);
 
-  fetch(`${API_ENDPOINT}judicodes/files/${key}`, {
+  await fetch(`${API_ENDPOINT}judicodes/files/${key}`, {
     method: "PUT",
     redirect: "follow",
     body: file,
@@ -34,7 +35,7 @@ export const uploadToRenterd = (file: File) => {
   })
     .then(async (res) => {
       await res.text();
-      window.location.reload();
+      console.log("File uploaded successfully!");
     })
     .catch((err) => console.log(err));
 };
@@ -51,11 +52,12 @@ export const getBase64Url = (name: string, authHeader: any) => {
         },
       }
     );
+
     const data = await singleResponse.blob();
     const blob = new Blob([data], {});
     const reader = new FileReader();
     reader.readAsDataURL(blob);
-    reader.onloadend = function () {
+    reader.onloadend = async () => {
       resolve(reader.result?.toString());
     };
     reader.onerror = function (err) {
@@ -65,6 +67,8 @@ export const getBase64Url = (name: string, authHeader: any) => {
 };
 
 export const downloadFromRentred = async () => {
+  console.log("Downloading file");
+
   const password = window.localStorage.getItem("token");
   const username = "";
 
@@ -86,11 +90,14 @@ export const downloadFromRentred = async () => {
       return { name: res.name, url: url };
     })
   );
-  window.location.reload();
+  console.log("Fils downloaded successfully!");
+
   return urls;
 };
 
 export const handleSiaDelete = (key: string) => {
+  console.log("deleteing...");
+
   const password = window.localStorage.getItem("token");
   const username = "";
   const authHeader =

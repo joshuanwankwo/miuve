@@ -11,19 +11,25 @@ import {
 } from "./api/siaServices";
 import { downloadFromS3, uploadToS3 } from "./api/s3Services";
 import LoginModal from "@/components/modal";
+import Loader from "@/components/loader";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("aws");
   const [awsFiles, setAwsFiles] = useState<Array<{}>>([]);
   const [siaFiles, setSiaFiles] = useState<Array<{}>>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleFileInput = async (e: any) => {
+    setLoading(true);
     if (activeTab === "aws") {
-      uploadToS3(e.target.files[0]);
+      await uploadToS3(e.target.files[0]);
+      window.location.reload();
     } else {
-      uploadToRenterd(e.target.files[0]);
+      await uploadToRenterd(e.target.files[0]);
+      window.location.reload();
     }
+    setLoading(false);
   };
 
   const [value] = useLocalStorage("token", "");
@@ -112,12 +118,16 @@ export default function Home() {
                   <Card key={index} file={file} type="sia" />
                 ))}
           </div>
-          <label
-            htmlFor="file"
-            className="cursor-pointer fixed bottom-20 right-20 z-10 h-14 w-14 flex items-center justify-center rounded-full bg-[#1ED660] text-4xl text-white transition-all hover:bg-white hover:text-[#1ED660] "
-          >
-            +
-          </label>
+          {loading ? (
+            <Loader />
+          ) : (
+            <label
+              htmlFor="file"
+              className="cursor-pointer fixed bottom-20 right-20 z-10 h-14 w-14 flex items-center justify-center rounded-full bg-[#1ED660] text-4xl text-white transition-all hover:bg-white hover:text-[#1ED660] "
+            >
+              +
+            </label>
+          )}
           <input
             type="file"
             id="file"

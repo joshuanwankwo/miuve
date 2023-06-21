@@ -1,4 +1,4 @@
-import { uploadToRenterd } from "@/app/api/siaServices";
+import { downloadFromRentred, uploadToRenterd } from "@/app/api/siaServices";
 
 export const getFileNameFromUrl = (url: any) => {
   const urlParts = url.split("/");
@@ -16,8 +16,10 @@ export const createFileFromImageUrl = async (imageUrl: any) => {
 
 export const handleMigration = (file: any) => {
   createFileFromImageUrl(file.url)
-    .then((file) => {
-      uploadToRenterd(file);
+    .then(async (file) => {
+      await uploadToRenterd(file);
+      await downloadFromRentred();
+      window.location.reload();
     })
     .catch((error) => {
       console.error(error);

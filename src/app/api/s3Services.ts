@@ -10,6 +10,8 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 export const handleS3Delete = (key: string) => {
+  console.log("Deleting file...");
+
   const params = {
     Bucket: "miuve",
     Key: key,
@@ -25,6 +27,7 @@ export const handleS3Delete = (key: string) => {
 };
 
 export const downloadFromS3 = async (): Promise<any[]> => {
+  console.log("Downloading...");
   const params = {
     Bucket: "miuve",
   };
@@ -43,12 +46,15 @@ export const downloadFromS3 = async (): Promise<any[]> => {
           };
         });
         resolve(fileKeys);
+        console.log("Done Downloading...");
       }
     });
   });
 };
 
 export const uploadToS3 = async (selectedFile: File) => {
+  console.log("Uploading...");
+
   const s3 = new AWS.S3();
   if (!selectedFile) {
     return;
@@ -60,7 +66,7 @@ export const uploadToS3 = async (selectedFile: File) => {
       Body: selectedFile,
     };
     await s3.upload(params).promise();
-    window.location.reload();
+    console.log("Done Uploading!");
   } catch (err) {
     console.log(err);
   }

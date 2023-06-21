@@ -5,18 +5,19 @@ const LoginModal = ({ toggleModal, isOpen }: any) => {
   const [newKey, setNewKey] = useState(false);
   const [passKey, setPassKey] = useState("");
 
-  console.log(isOpen);
-
   const handleRegister = async (type: string) => {
-    if (type === "new") {
-      const key = await register();
-      console.log(key);
-      setPassKey(key);
-      window.localStorage.setItem("token", JSON.stringify(key));
-      // window.location.reload();
-    } else {
-      window.localStorage.setItem("token", JSON.stringify(passKey));
+    if (passKey) {
       window.location.reload();
+    } else {
+      if (type === "new") {
+        const key = await register();
+        setPassKey(key);
+        window.localStorage.setItem("token", JSON.stringify(key));
+        // window.location.reload();
+      } else {
+        window.localStorage.setItem("token", JSON.stringify(passKey));
+        window.location.reload();
+      }
     }
   };
 
@@ -80,7 +81,7 @@ const LoginModal = ({ toggleModal, isOpen }: any) => {
                   className="rounded-full border font-bold border-green  bg-[#1ED660] p-1.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black "
                   onClick={() => handleRegister("new")}
                 >
-                  Generate
+                  {passKey ? "Done" : "Generate"}
                 </button>
               ) : (
                 <button
