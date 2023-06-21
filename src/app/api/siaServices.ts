@@ -31,7 +31,9 @@ export const uploadToRenterd = (file: File) => {
       Authorization: authHeader,
     },
   })
-    .then((res) => res.text())
+    .then((res) => {
+      res.text();
+    })
     .catch((err) => console.log(err));
 };
 
@@ -77,8 +79,29 @@ export const downloadFromRentred = async () => {
   const newRes = await res.json();
 
   const urls = await Promise.all(
-    newRes.map((res: { name: string }) => getBase64Url(res.name, authHeader))
+    newRes.map(async (res: { name: string }) => {
+      const url = await getBase64Url(res.name, authHeader);
+      return { name: res.name, url: url };
+    })
   );
 
   return urls;
+};
+
+export const handleSiaDelete = (key: string) => {
+  const password = window.localStorage.getItem("token");
+  const username = "";
+  const authHeader =
+    "Basic " + btoa(username + ":" + JSON.parse(password as string));
+  fetch(`${API_ENDPOINT}judicodes/files/${key}`, {
+    method: "DELETE",
+    redirect: "follow",
+    headers: {
+      Authorization: authHeader,
+    },
+  })
+    .then((res) => {
+      res.text();
+    })
+    .catch((err) => console.log(err));
 };

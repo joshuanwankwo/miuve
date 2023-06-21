@@ -1,10 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
-import { uploadToRenterd } from "@/app/api/siaServices";
+import { handleS3Delete } from "@/app/api/s3Services";
+import { handleSiaDelete, uploadToRenterd } from "@/app/api/siaServices";
+import { handleMigration } from "@/lib/utils";
 import React, { useState } from "react";
 
 export default function Card({ file, type }: any) {
   const [isHovered, setIsHovered] = useState(false);
 
+  console.log(file);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -14,44 +17,19 @@ export default function Card({ file, type }: any) {
     setIsHovered(false);
   };
 
-  async function createFileFromImageUrl(imageUrl: any) {
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    const fileName = getFileNameFromUrl(imageUrl);
-    const file = new File([blob], fileName, { type: blob.type });
-
-    return file;
-  }
-
-  const handleMigration = () => {
-    createFileFromImageUrl(file.url)
-      .then((file) => {
-        uploadToRenterd(file);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const handleDelete = (file: any) => {
+    if (type === "aws") {
+      handleS3Delete(file.key);
+    } else {
+      handleSiaDelete(file.name);
+    }
   };
-  const handleDeletion = () => {
-    createFileFromImageUrl(file.url)
-      .then((file) => {
-        uploadToRenterd(file);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  function getFileNameFromUrl(url: any) {
-    const urlParts = url.split("/");
-    return urlParts[urlParts.length - 1];
-  }
 
   return (
     <div
       className={` animate-fade-up relative col-span-1 flex flex-wrap overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md }`}
-      onMouseEnter={type === "aws" ? handleMouseEnter : undefined}
-      onMouseLeave={type === "aws" ? handleMouseLeave : undefined}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div
         style={{
@@ -62,8 +40,8 @@ export default function Card({ file, type }: any) {
         }}
       >
         <img
-          src={type === "aws" ? file.url.split("?")[0] : file}
-          alt={type === "aws" ? file.url.split("?")[0] : file}
+          src={type === "aws" ? file.url.split("?")[0] : file.url}
+          alt={type === "aws" ? file.url.split("?")[0] : file.url}
           className="mx-auto max-w-md text-center"
           style={{
             flex: "1 0 auto",
@@ -89,17 +67,19 @@ export default function Card({ file, type }: any) {
           }}
         >
           <button
-            onClick={() => handleDeletion}
+            onClick={() => handleDelete(file)}
             className="flex max-w-fit animate-fade-up items-center justify-center overflow-hidden rounded-full bg-red-100 px-7 py-2 text-sm font-semibold text-[#c44e4e] transition-colors hover:bg-red-200"
           >
             🗑️ Delete
           </button>
-          <button
-            onClick={() => handleMigration()}
-            className="flex max-w-fit animate-fade-up items-center justify-center overflow-hidden rounded-full bg-green-100 px-7 py-2 text-sm font-semibold text-[#4ef01d] transition-colors hover:bg-green-200"
-          >
-            Migrate to Sia
-          </button>
+          {type === "aws" && (
+            <button
+              onClick={() => handleMigration(file)}
+              className="flex max-w-fit animate-fade-up items-center justify-center overflow-hidden rounded-full bg-green-100 px-7 py-2 text-sm font-semibold text-[#4ef01d] transition-colors hover:bg-green-200"
+            >
+              Migrate to Sia
+            </button>
+          )}
         </div>
       )}
     </div>

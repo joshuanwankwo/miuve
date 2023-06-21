@@ -12,16 +12,16 @@ import { downloadFromS3, uploadToS3 } from "./api/s3Services";
 export default function Home() {
   const [activeTab, setActiveTab] = useState("aws");
   const [awsFiles, setAwsFiles] = useState<Array<{}>>([]);
-  const [siaFiles, setSiaFiles] = useState<Array<string>>([]);
-  const [uploaded, setUploaded] = useState(false);
+  const [siaFiles, setSiaFiles] = useState<Array<{}>>([]);
+  const [reload, setRelaod] = useState(false);
 
-  const handleFileInput = (e: any) => {
+  const handleFileInput = async (e: any) => {
     if (activeTab === "aws") {
       uploadToS3(e.target.files[0]);
-      setUploaded(true);
+      setRelaod(true);
     } else {
       uploadToRenterd(e.target.files[0]);
-      setUploaded(true);
+      setRelaod(true);
     }
   };
 
@@ -30,30 +30,17 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const list = await downloadFromS3();
-        setAwsFiles(list);
-        setUploaded(false);
+        const awsList = await downloadFromS3();
+        setAwsFiles(awsList);
+        const siaList = await downloadFromRentred();
+        setSiaFiles(siaList);
+        setRelaod(true);
       } catch (e) {
         console.log(e);
       }
     };
-
     fetchData();
-  }, [uploaded]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const list = await downloadFromRentred();
-        setSiaFiles(list);
-        setUploaded(false);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    fetchData();
-  }, []);
+  }, [setRelaod]);
 
   return (
     <>

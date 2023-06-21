@@ -1,7 +1,5 @@
 import AWS from "aws-sdk";
 
-console.log(process.env.AWS_ACCESS_KEY);
-
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -11,12 +9,12 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-export const handleDelete = (key: string) => {
+export const handleS3Delete = (key: string) => {
   const params = {
     Bucket: "miuve",
     Key: key,
   };
-  s3.deleteObject(params, (error, data) => {
+  s3.deleteObject(params, (error) => {
     if (error) {
       console.error("Error deleting file:", error);
     } else {
