@@ -1,8 +1,10 @@
 import AWS from "aws-sdk";
 
+console.log(process.env.AWS_ACCESS_KEY);
+
 AWS.config.update({
-  accessKeyId: "AKIAQXZ7WJWOJA7EH7FS",
-  secretAccessKey: "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",
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: "us-east-1",
   signatureVersion: "v4",
 });

@@ -7,8 +7,6 @@ export const register = () => {
   })
     .then((res) => res.json())
     .then((result) => {
-      // Log the resolved result
-
       window.localStorage.setItem("token", JSON.stringify(result));
     })
     .catch((err) => console.log(err));
