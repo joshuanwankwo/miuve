@@ -7,8 +7,6 @@ import React, { useState } from "react";
 export default function Card({ file, type }: any) {
   const [isHovered, setIsHovered] = useState(false);
 
-  console.log(file);
-
   const handleMouseEnter = () => {
     setIsHovered(true);
   };

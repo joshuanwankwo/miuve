@@ -19,6 +19,7 @@ export const handleS3Delete = (key: string) => {
       console.error("Error deleting file:", error);
     } else {
       console.log("File deleted successfully");
+      window.location.reload();
     }
   });
 };
@@ -59,6 +60,7 @@ export const uploadToS3 = async (selectedFile: File) => {
       Body: selectedFile,
     };
     await s3.upload(params).promise();
+    window.location.reload();
   } catch (err) {
     console.log(err);
   }

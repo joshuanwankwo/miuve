@@ -1,19 +1,20 @@
 import { API_ENDPOINT, REGISTER_ENDPOINT } from "@/lib/constants";
 
-export const register = () => {
-  fetch(REGISTER_ENDPOINT, {
+export const register = async () => {
+  return fetch(REGISTER_ENDPOINT, {
     method: "POST",
     redirect: "follow",
   })
-    .then((res) => res.json())
-    .then((result) => {
-      window.localStorage.setItem("token", JSON.stringify(result));
+    .then(async (res) => res.json())
+    .then(async (result) => {
+      return result;
     })
     .catch((err) => console.log(err));
 };
 
 export const logOut = () => {
   window.localStorage.removeItem("token");
+  window.location.reload();
 };
 
 export const uploadToRenterd = (file: File) => {
@@ -31,8 +32,9 @@ export const uploadToRenterd = (file: File) => {
       Authorization: authHeader,
     },
   })
-    .then((res) => {
-      res.text();
+    .then(async (res) => {
+      await res.text();
+      window.location.reload();
     })
     .catch((err) => console.log(err));
 };
@@ -84,7 +86,7 @@ export const downloadFromRentred = async () => {
       return { name: res.name, url: url };
     })
   );
-
+  window.location.reload();
   return urls;
 };
 
@@ -100,8 +102,9 @@ export const handleSiaDelete = (key: string) => {
       Authorization: authHeader,
     },
   })
-    .then((res) => {
-      res.text();
+    .then(async (res) => {
+      await res.text();
+      window.location.reload();
     })
     .catch((err) => console.log(err));
 };

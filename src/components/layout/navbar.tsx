@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
-import { useSignInModal } from "./sign-in-modal";
 import { useEffect, useState } from "react";
 import useLocalStorage from "@/lib/hooks/use-local-storage";
 import { logOut, register } from "@/app/api/siaServices";
@@ -37,14 +36,14 @@ export default function NavBar() {
           <div>
             {value ? (
               <button
-                className="rounded-full border border-green bg-[#1ED660] p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
+                className="rounded-full border border-green bg-[#1ED660] p-1.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black "
                 onClick={() => logOut()}
               >
                 Log Out
               </button>
             ) : (
               <button
-                className="rounded-full border border-green bg-[#1ED660] p-2.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black font-bold "
+                className="rounded-full border border-green bg-[#1ED660] p-1.5 px-6 text-sm text-white transition-all hover:bg-white hover:text-black "
                 onClick={() => register()}
               >
                 Get Started
