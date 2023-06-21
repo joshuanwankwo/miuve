@@ -4,13 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
 import { useSignInModal } from "./sign-in-modal";
-import { logOut, register } from "@/app/api/services";
 import { useEffect, useState } from "react";
 import useLocalStorage from "@/lib/hooks/use-local-storage";
+import { logOut, register } from "@/app/api/siaServices";
 
 export default function NavBar() {
   const scrolled = useScroll(50);
-  // const [storedValue, setStoredValue] = useState("");
   const [value] = useLocalStorage("token", "");
   useEffect(() => {
     console.log(value);

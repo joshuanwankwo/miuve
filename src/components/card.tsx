@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import { uploadToRenterd } from "@/app/api/siaServices";
 import React, { useState } from "react";
-import { uploadToRenterd } from "@/app/api/services";
 
-export default function Card({ file }: any) {
+export default function Card({ file, type }: any) {
   const [isHovered, setIsHovered] = useState(false);
+
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -16,13 +17,22 @@ export default function Card({ file }: any) {
   async function createFileFromImageUrl(imageUrl: any) {
     const response = await fetch(imageUrl);
     const blob = await response.blob();
-    const fileName = getFileNameFromUrl(imageUrl); // Helper function to extract the filename from the URL
+    const fileName = getFileNameFromUrl(imageUrl);
     const file = new File([blob], fileName, { type: blob.type });
 
     return file;
   }
 
   const handleMigration = () => {
+    createFileFromImageUrl(file.url)
+      .then((file) => {
+        uploadToRenterd(file);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  const handleDeletion = () => {
     createFileFromImageUrl(file.url)
       .then((file) => {
         uploadToRenterd(file);
@@ -39,15 +49,31 @@ export default function Card({ file }: any) {
 
   return (
     <div
-      className={` animate-fade-up relative col-span-1 h-96 w-96 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md }`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className={` animate-fade-up relative col-span-1 flex flex-wrap overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md }`}
+      onMouseEnter={type === "aws" ? handleMouseEnter : undefined}
+      onMouseLeave={type === "aws" ? handleMouseLeave : undefined}
     >
-      <img
-        src={file.url.split("?")[0]}
-        alt={file.url.split("?")[0]}
-        className="mx-auto max-w-md text-center"
-      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={type === "aws" ? file.url.split("?")[0] : file}
+          alt={type === "aws" ? file.url.split("?")[0] : file}
+          className="mx-auto max-w-md text-center"
+          style={{
+            flex: "1 0 auto",
+            objectFit: "fill",
+            height: "auto",
+            maxHeight: "100%",
+            maxWidth: "100%",
+          }}
+        />
+      </div>
       {isHovered && (
         <div
           style={{
@@ -63,7 +89,7 @@ export default function Card({ file }: any) {
           }}
         >
           <button
-            onClick={() => console.log("Delete")}
+            onClick={() => handleDeletion}
             className="flex max-w-fit animate-fade-up items-center justify-center overflow-hidden rounded-full bg-red-100 px-7 py-2 text-sm font-semibold text-[#c44e4e] transition-colors hover:bg-red-200"
           >
             🗑️ Delete

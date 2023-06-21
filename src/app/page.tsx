@@ -1,107 +1,59 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Card from "@/components/card";
 import { useEffect, useState } from "react";
 import Balancer from "react-wrap-balancer";
-import { downloadFromRentred, uploadToRenterd } from "./api/services";
 import AWS from "aws-sdk";
 import useLocalStorage from "@/lib/hooks/use-local-storage";
-
-AWS.config.update({
-  accessKeyId: "AKIAQXZ7WJWOJA7EH7FS",
-  secretAccessKey: "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",
-  region: "us-east-1",
-  signatureVersion: "v4",
-});
-
-const s3 = new AWS.S3();
+import { downloadFromRentred, uploadToRenterd } from "./api/siaServices";
+import { downloadFromS3, uploadToS3 } from "./api/s3Services";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("aws");
-  const [awsFiles, setAwsFiles] = useState([]);
-  const [siaFiles, setSiaFiles] = useState([]);
+  const [awsFiles, setAwsFiles] = useState<Array<{}>>([]);
+  const [siaFiles, setSiaFiles] = useState<Array<string>>([]);
   const [uploaded, setUploaded] = useState(false);
-  const [blobURL, setBlobURL] = useState<void>();
 
   const handleFileInput = (e: any) => {
     if (activeTab === "aws") {
       uploadToS3(e.target.files[0]);
+      setUploaded(true);
     } else {
       uploadToRenterd(e.target.files[0]);
+      setUploaded(true);
     }
   };
 
   const [value] = useLocalStorage("token", "");
 
-  const uploadToS3 = async (selectedFile: File) => {
-    const s3 = new AWS.S3();
-
-    if (!selectedFile) {
-      return;
-    }
-    try {
-      const params = {
-        Bucket: "miuve",
-        Key: `${Date.now()}.${selectedFile.name}` || "",
-        Body: selectedFile,
-      };
-      await s3.upload(params).promise();
-      setUploaded(true);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    const getFilesFromS3 = () => {
-      const params = {
-        Bucket: "miuve",
-      };
-
-      s3.listObjectsV2(params, (err, data) => {
-        if (err) {
-          console.log(err);
-        } else {
-          const fileKeys: any = data.Contents?.map((file) => {
-            return {
-              key: file.Key,
-              url: getFileUrlFromS3(file.Key),
-              body: file,
-            };
-          });
-          setAwsFiles(fileKeys);
-        }
-      });
-      setUploaded(false);
-    };
-    getFilesFromS3();
-  }, [uploaded]);
-
-  const getFileUrlFromS3 = (key: any) => {
-    const params = {
-      Bucket: "miuve",
-      Key: key,
-    };
-
-    const signedUrl = s3.getSignedUrl("getObject", params);
-
-    return signedUrl;
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await downloadFromRentred();
-        setBlobURL(data);
-
-        // setBlobURL(data);
-      } catch (error) {
-        console.error("API request failed:", error);
+        const list = await downloadFromS3();
+        setAwsFiles(list);
+        setUploaded(false);
+      } catch (e) {
+        console.log(e);
       }
     };
 
     fetchData();
-  }, [blobURL]);
+  }, [uploaded]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const list = await downloadFromRentred();
+        setSiaFiles(list);
+        setUploaded(false);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -144,20 +96,6 @@ export default function Home() {
                 : "bg-white px-5 py-2 text-sm text-gray-600 shadow-md transition-colors hover:border-green-200"
             }`}
           >
-            {/* <svg
-              className="h-4 w-4 group-hover:text-black"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 4L20 20H4L12 4Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg> */}
             <p>AWS s3 bucket</p>
           </button>
           <button
@@ -168,7 +106,6 @@ export default function Home() {
                 : "bg-white px-5 py-2 text-sm text-gray-600 shadow-md transition-colors hover:border-green-200"
             } `}
           >
-            {/* <Github /> */}
             <p>
               <span className="hidden sm:inline-block">Sia Cloud</span> Renterd
             </p>
@@ -178,8 +115,12 @@ export default function Home() {
       {value && (
         <div className="my-10 grid w-screen max-w-screen-xl animate-fade-up grid-cols-1 gap-5 border px-5 md:grid-cols-3 xl:px-0">
           {activeTab === "aws"
-            ? awsFiles.map((file, index) => <Card key={index} file={file} />)
-            : siaFiles.map((file, index) => <Card key={index} file={file} />)}
+            ? awsFiles.map((file, index) => (
+                <Card key={index} file={file} type="aws" />
+              ))
+            : siaFiles.map((file, index) => (
+                <Card key={index} file={file} type="sia" />
+              ))}
         </div>
       )}
       <label
