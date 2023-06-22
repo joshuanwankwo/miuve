@@ -6,7 +6,6 @@ import Balancer from "react-wrap-balancer";
 import useLocalStorage from "@/lib/hooks/use-local-storage";
 import {
   downloadFromRentred,
-  register,
   uploadToRenterd,
 } from "./api/siaServices";
 import { downloadFromS3, uploadToS3 } from "./api/s3Services";
